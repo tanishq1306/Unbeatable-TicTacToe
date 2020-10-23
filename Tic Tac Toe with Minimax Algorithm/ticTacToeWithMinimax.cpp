@@ -32,7 +32,6 @@ void printBoard();
 // player 
 struct Player 
 {
-	string name;
 	int id;	// [0 - human] [1 - bot]
     char symbol;
 } p1, p2;
@@ -245,6 +244,7 @@ void printBoard()
 // human player move
 int HumanPlayerMove(char symbol)
 {
+	cout << "Human\n";
 	int index;
 	while (1)
 	{
@@ -275,8 +275,10 @@ int BotMove(char id)
 // minmax
 Move minimax(char curr_player)
 {
-	char max_player = (curr_player == 'X') ? 'X' : '0';
-	char other_player = (curr_player == 'X') ? 'O' : 'X';
+	// Since my bot will always get the second chance
+	// it will try to maximize its score (that's why I fixed the max_player). 
+	char max_player = 'O';
+	char other_player = 'X';
 	Move best, current;
 
 	// base condition for win - lose
@@ -307,7 +309,7 @@ Move minimax(char curr_player)
 		doMove(curr_player, move_set[i]);
 		current = minimax(other_player);
 		setChar(' ', move_set[i]);
-		resetWinner();
+		resetWinner(); 
 		current.index = move_set[i];
 
 		if (curr_player == max_player)
@@ -330,13 +332,13 @@ void play()
     int index;
     reset();
     
-    int chance = 1;	//1 player chance
-    p1.symbol = 'X';
-    p2.symbol = 'O';
+    int chance = 1;		// 1 player chance
+    p1.symbol = 'X';	// First player always gets the X symbol
+    p2.symbol = 'O';	// Second player always gets the Y symbol
     
     while (isMovePossible())
     {
-		char letter = chance ? p1.symbol : p2.symbol;
+		char letter = chance == 1 ? p1.symbol : p2.symbol;
 		
         if (chance)
             index = (p1.id == 0 ? HumanPlayerMove(p1.symbol) : BotMove(p1.symbol));
