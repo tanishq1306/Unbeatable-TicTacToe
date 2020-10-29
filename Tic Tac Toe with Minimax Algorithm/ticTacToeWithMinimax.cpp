@@ -27,7 +27,7 @@ bool checkWinner(char symbol);
 void doMove(char symbol, int index);
 
 // print the board
-void printBoard();
+void printBoard(int gameMode);
 
 // player 
 struct Player 
@@ -50,7 +50,7 @@ int HumanPlayerMove();
 int BotMove();
 
 // play
-void play();
+void play(int gameMode);
 
 // minimax Algorithm
 Move minimax(char curr_player);
@@ -76,22 +76,16 @@ int main()
 		switch (mode)
         {
 			case 1:
-				cout <<	"\t\t1. Human v/s Human\n";
-				cout <<	"\t\t==================\n";
 				p1.id = 0;
 				p2.id = 0;
 				break;
 
 			case 2:
-				cout <<	"\t\t1. Human v/s BOT\n";
-				cout <<	"\t\t==================\n";
 				p1.id = 0;
 				p2.id = 1;
 				break;
 
 			case 3:
-				cout <<	"\t\t1. BOT v/s BOT\n";
-				cout <<	"\t\t==================\n";
 				p1.id = 1;
 				p2.id = 1;
 				break;
@@ -101,7 +95,7 @@ int main()
         }
 		
 		//let's play
-		play ();
+		play (mode);
         
         cout << "\nDo You Want To Play again (y / n) : ";
         cin >> choice;
@@ -133,7 +127,6 @@ void reset()
 	resetBoard();
 	resetWinner();
 }
-
 
 // setters and getters
 void setChar(char symbol, int i) 
@@ -228,8 +221,26 @@ void doMove(char symbol, int index)
 	}
 }
 
-void printBoard()
+void printBoard(int gameMode)
 {
+	switch (gameMode)
+	{
+		case 1:
+			cout <<	"\t\t1. Human v/s Human\n";
+			cout <<	"\t\t==================\n";
+			break;
+
+		case 2:
+			cout <<	"\t\t1. Human v/s BOT\n";
+			cout <<	"\t\t==================\n";
+			break;
+
+		case 3:
+			cout <<	"\t\t1. BOT v/s BOT\n";
+			cout <<	"\t\t==================\n";
+			break;
+	}
+	
 	for (int i = 0; i <= 6; i += 3)
 	{
 		cout << "\n\t\t\t " << getChar(i) << "  | " << getChar(i + 1) << " | " << getChar(i + 2);
@@ -244,7 +255,6 @@ void printBoard()
 // human player move
 int HumanPlayerMove(char symbol)
 {
-	cout << "Human\n";
 	int index;
 	while (1)
 	{
@@ -263,7 +273,7 @@ int BotMove(char id)
 {
 	Move trialMove;
 	srand(time(0));
-
+	
 	if ((int)allPossibleMoves().size() == 9)
 		trialMove.index = rand() % 9;
 	else
@@ -278,7 +288,7 @@ Move minimax(char curr_player)
 	// Since my bot will always get the second chance
 	// it will try to maximize its score (that's why I fixed the max_player). 
 	char max_player = 'O';
-	char other_player = 'X';
+	char other_player = (curr_player == 'X' ? 'O' : 'X');
 	Move best, current;
 
 	// base condition for win - lose
@@ -327,7 +337,7 @@ Move minimax(char curr_player)
 	return best;
 }
 
-void play()
+void play(int mode)
 {
     int index;
     reset();
@@ -338,7 +348,9 @@ void play()
     
     while (isMovePossible())
     {
-		char letter = chance == 1 ? p1.symbol : p2.symbol;
+		printBoard(mode);
+  
+		char letter = (chance == 1 ? p1.symbol : p2.symbol);
 		
         if (chance)
             index = (p1.id == 0 ? HumanPlayerMove(p1.symbol) : BotMove(p1.symbol));
@@ -347,8 +359,8 @@ void play()
 		
         doMove(letter, index);
         cout << endl << letter << " makes move to " << index + 1 << endl;
-        printBoard();
-        
+        system ("cls");
+		
         if (checkWinner(letter))
         {
             cout << endl << letter << " wins!\n";
